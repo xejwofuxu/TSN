@@ -11,12 +11,12 @@ using namespace faker_tsn;
 static void my_callback(u_char* useless, const struct pcap_pkthdr* pkthdr, const u_char* packet) {
     static int count = 1;
     printf("Packet %d:\n", count);
-    printf("    useless: %x\n", useless);
-    printf("    pkthdr: %x\n", pkthdr);
-    printf("    pkthdr->ts: %d.%d\n", pkthdr->ts.tv_sec, pkthdr->ts.tv_usec);
-    printf("    pkthdr->caplen: %d\n", pkthdr->caplen);
-    printf("    pkthdr->len: %d\n", pkthdr->len);
-    printf("    packet: %x\n", packet);
+    printf("    useless: %x\n", useless);                                     /* 句柄号 */
+    printf("    pkthdr: %x\n", pkthdr);                                       /* 收到数据包的 pcap_pkthdr 类型的指针 */
+    printf("    pkthdr->ts: %d.%d\n", pkthdr->ts.tv_sec, pkthdr->ts.tv_usec); /* 时间戳 */
+    printf("    pkthdr->caplen: %d\n", pkthdr->caplen);                       /* 抓到的数据长度 */
+    printf("    pkthdr->len: %d\n", pkthdr->len);                             /* 数据包的实际长度 */
+    printf("    packet: %x\n", packet);                                       /* 收到的数据包数据 */
 
     if (count >= 3) {
         pcap_breakloop((pcap_t*)useless);
@@ -61,12 +61,14 @@ static void TestPCAPFindAllDevs() {
     if (pcap_findalldevs(&devs, errbuf) < 0) {
         fprintf(stderr, "Couldn't open devices: %s\n", errbuf);
     }
+    // 输出所有设备
     for (pcap_if_t* dev = devs; dev != NULL; dev = dev->next) {
         fprintf(stdout, "name: %s\n", dev->name);
         fprintf(stdout, "flags: %d\n", dev->flags);
         puts("");
+        // sa_family: 17 是链路层包，2 是 ipv4 包，10 是 ipv6 包
         for (pcap_addr_t* addr = dev->addresses; addr != NULL; addr = addr->next) {
-            /* print dstaddr */
+            /* print addr、netmask、broadaddr、dstaddr */
             fprintf(stdout, "addr->addr: 0x%x %p\n", addr->addr, addr->addr);
             helper(addr->addr, "addr->addr");
             fprintf(stdout, "addr->netmask: 0x%x %p\n", addr->netmask, addr->netmask);
@@ -117,7 +119,7 @@ static void TestPCAPLoop() {
     }
 
     /* loop */
-    pcap_loop(handle, 5, my_callback, (u_char*)handle);
+    pcap_loop(handle, 5, my_callback, (u_char*)handle);  // 调用了回调函数，该函数中输出了数据包信息以及大于 3 个包就返回，所以输出了 3 个包的信息
     // pcap_dispatch(handle, 5, my_callback, (u_char*)handle);
 
     // struct pcap_pkthdr header; /* The header that pcap gives us */
@@ -130,6 +132,14 @@ static void TestPCAPLoop() {
     pcap_close(handle);
 }
 
+TEST(TEST_LIBPCAP, TEST_PCAP_LOOK_UP_DEV) {
+    TestPCAPLookUpDev();
+}
+
 TEST(TEST_LIBPCAP, TEST_PCAP_FIND_ALL_DEVS) {
     TestPCAPFindAllDevs();
+}
+
+TEST(TEST_LIBPCAP, TEST_PCAP_LOOP) {
+    TestPCAPLoop();
 }
