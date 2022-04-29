@@ -107,7 +107,7 @@ struct MacTable {
 
     static void addItem(const unsigned char* mac, std::vector<unsigned short>& ports, long long timeout = -1) {
         mac_token temp;
-        memcpy(&temp, mac, ETH_ALEN);
+        memcpy(&temp, mac, ETH_ALEN);  
         ForwardPair forwardPair(ports, timeout);
         MacTable::items.emplace(std::move(temp), std::move(forwardPair));
     }

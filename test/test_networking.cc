@@ -267,7 +267,7 @@ static void TestIfEther() {
 }
 
 static void TestMacTable() {
-    MacTable::loadRouteXML("./config/routes.xml");
+    MacTable::loadRouteXML("/home/reptile/桌面/tsn_app/config/routes.xml"); 
     INFO("\n" + MacTable::toString());
 }
 
