@@ -93,19 +93,26 @@ class Time {
 
         friend TimePoint operator+(const TimePoint& timePoint, const TimeInterval& interval) {
             Time::TimePoint _tp;
-            _tp.sec = timePoint.sec + interval.sec;
             _tp.nsec = timePoint.nsec + interval.nsec;
+            _tp.sec = timePoint.sec + interval.sec;
+            // 进 1 s
+            if (_tp.nsec >= 1000000000) {
+                _tp.sec += 1;
+                _tp.nsec -= 1000000000;
+            }
             return _tp;
         }
 
         friend TimePoint operator-(const TimePoint& timePoint, const TimeInterval& interval) {
+            // 默认 interval 比 timePoint 小，所以 sec 后者比前者大，仅仅需要比较 nsec
             Time::TimePoint _tp;
             long _t = timePoint.nsec - interval.nsec;
             if (_t >= 0) {
                 _tp.sec = timePoint.sec - interval.sec;
                 _tp.nsec = _t;
             } else {
-                _tp.sec = timePoint.sec - interval.sec + 1;
+                // _tp.sec = timePoint.sec - interval.sec + 1;
+                _tp.sec = timePoint.sec - interval.sec - 1;
                 _tp.nsec = 1000000000 + _t;
             }
             return _tp;
