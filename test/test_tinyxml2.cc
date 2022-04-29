@@ -10,7 +10,7 @@ using namespace tinyxml2;
 
 static void TestTinyXML2_Read() {
     XMLDocument doc;
-    doc.LoadFile("./config/tinyxml2_test.xml");
+    doc.LoadFile("/home/reptile/下载/TSN/config/tinyxml2_test.xml");
     XMLElement *root = doc.RootElement();
     INFO(root->Attribute("name"));
     XMLElement *surface = root->FirstChildElement("surface");
