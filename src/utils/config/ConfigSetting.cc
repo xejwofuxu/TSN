@@ -1,7 +1,7 @@
 #include "ConfigSetting.h"
 
 // 构造函数，以 = 和 # 作为分界点，并给出配置文件的相对路径
-ConfigSetting::ConfigSetting() : m_delimiter(std::string(1, '=')), m_commet(std::string(1, '#')), m_filename("../../config/config.ini") {
+ConfigSetting::ConfigSetting() : m_delimiter(std::string(1, '=')), m_commet(std::string(1, '#')), m_filename("/home/reptile/下载/TSN/config/config.ini") {
     std::ifstream in(this->m_filename.c_str());
     if (!in) throw FileNotFoundException(this->m_filename.c_str());
     in >> (*this);
