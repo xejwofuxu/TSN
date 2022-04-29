@@ -24,8 +24,8 @@ static void TestSend() {
         unsigned char buffer[ETH_FRAME_LEN];
     };  // ethframe
 
-    const char* deviceName = "h1-eth0";
-    // const char* deviceName = "ens33";
+    // const char* deviceName = "h1-eth0";
+    const char* deviceName = "ens33";
 
     /* create raw socket */
     int sockfd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_8021Q));  // create socket
@@ -39,7 +39,7 @@ static void TestSend() {
 
     int frameNum = 2;
     for (int i = 1; i <= frameNum; i++) {
-        INFO("Encode frame");
+        INFO("\n\nEncode frame");
         /* construct ethernet header */
         struct ethhdr eth_hdr;
         memset(&eth_hdr, 0x00, sizeof(eth_hdr));
@@ -50,7 +50,7 @@ static void TestSend() {
         eth_hdr.h_proto = htons(ETH_P_ALL);  // set IEEE 802.1Q protocol
         INFO("dest mac = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&eth_hdr.h_dest), 6));
         INFO("src mac = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&eth_hdr.h_source), 6));
-        INFO("protocol = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&eth_hdr.h_proto), 2));
+        INFO("protocol = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&eth_hdr.h_proto), 2) + "\n");
 
         /* construct VLAN-tag */
         // struct vlan_tci tci = 0x1001;
@@ -60,13 +60,13 @@ static void TestSend() {
         // INFO("pcp = " + std::to_string(tci.pcp));
         // INFO("dei = " + std::to_string(tci.dei));
         // INFO("vid = " + std::to_string(tci.vid));
-        __be16 tci = htons(0xE001);  // 0010 0000 0000 0001
+        __be16 tci = htons(0xE001);  // 1100 0000 0000 0001
         struct vlan_hdr vlan_tag;
         memset(&vlan_tag, 0x00, sizeof(vlan_tag));
         memcpy(&vlan_tag.h_vlan_TCI, &tci, sizeof(tci));        // set TCI
         vlan_tag.h_vlan_encapsulated_proto = htons(ETH_P_ALL);  // set IEEE 1722 protocol
         INFO("TCI = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&vlan_tag.h_vlan_TCI), 2));
-        INFO("protocol = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&vlan_tag.h_vlan_encapsulated_proto), 2));
+        INFO("protocol = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&vlan_tag.h_vlan_encapsulated_proto), 2) + "\n");
 
         /* construct R-tag */
         struct rtag_hdr rtag;
@@ -75,7 +75,7 @@ static void TestSend() {
         rtag.h_rtag_encapsulated_proto = htons(ETH_P_IP);
         INFO("reserved = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&rtag.h_rtag_rsved), 2));
         INFO("sequence number = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&rtag.h_rtag_seq_num), 2));
-        INFO("protocol = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&rtag.h_rtag_encapsulated_proto), 2));
+        INFO("protocol = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&rtag.h_rtag_encapsulated_proto), 2) + "\n");
 
         /* construct TSN frame */
         union tsn_frame frame;
@@ -87,7 +87,7 @@ static void TestSend() {
         memcpy(&frame.filed.header.vlan_tag, &vlan_tag, sizeof(vlan_tag));
         memcpy(&frame.filed.header.r_tag, &rtag, sizeof(rtag));
         memcpy(frame.filed.data, data, strlen(data));
-        INFO("data = " + std::string(data));
+        INFO("data = " + std::string(data) + "\n");
 
         /* fill in frame */
         // union ethframe frame;
