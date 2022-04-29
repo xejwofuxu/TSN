@@ -18,9 +18,11 @@ static void TestClockGetTime() {
     memset(&ts, 0, sizeof(ts));
 
     clock_gettime(CLOCK_REALTIME, &ts);
+    // 相对时间，从 1970.1.1 到目前的时间。更改系统时间会更改获取的值。它以系统时间为坐标。
     cout << "[CLOCK_REALTIME] ";
     cout << "sec:" << ts.tv_sec << " nsec:" << ts.tv_nsec << endl;
-
+    
+    // 系统启动后流逝的时间
     clock_gettime(CLOCK_MONOTONIC, &ts);
     cout << "[CLOCK_MONOTONIC] ";
     cout << "sec:" << ts.tv_sec << " nsec:" << ts.tv_nsec << endl;
@@ -28,23 +30,37 @@ static void TestClockGetTime() {
 
 static void TestTimeClass() {
     Time::TimePoint timePoint;
+    // clock_gettime(CLOCK_REALTIME, &ts);取的是 CLOCK_REALTIME，相对时间
     timePoint.setNow();
     INFO(timePoint.toString());
 
-    Time::TimeInterval timeInterval(1, 0);
-    timePoint = timePoint + timeInterval;
+
+    // 延迟 1 s（测试 friend TimePoint operator+(const TimePoint& timePoint, const TimeInterval& interval)）
+    Time::TimeInterval timeInterval1(1, 0);
+    timePoint = timePoint + timeInterval1;
     INFO(timePoint.toString());
 
-    // sleep 3s
-    chrono::nanoseconds sleepTime(2000000000);
-    this_thread::sleep_for(sleepTime);  // millisecond deviation
-    cout << "sleep 2s" << endl;
+    // 提前 0.8 s（测试 friend TimePoint operator-(const TimePoint& timePoint, const TimeInterval& interval)）
+    Time::TimeInterval timeInterval2(0, 800000000);
+    timePoint = timePoint - timeInterval2;
+    INFO(timePoint.toString());
 
-    Time::TimePoint _timePoint;
-    _timePoint.setNow();
-    INFO(_timePoint.toString());
-    Time::TimeInterval timeInterval1 = _timePoint - timePoint;
-    INFO(timeInterval1.toString());
+
+    // 取差值，输出时间间隔，测试 friend TimeInterval operator-(const TimePoint& timePoint1, const TimePoint& timePoint2) 
+    Time::TimePoint _timePoint1;
+    _timePoint1.setNow();
+    INFO(_timePoint1.toString());
+
+    // sleep 2.8s 
+    chrono::nanoseconds sleepTime(2800000000);
+    this_thread::sleep_for(sleepTime);  // millisecond deviation
+    cout << "sleep 2.8 s" << endl;
+
+    Time::TimePoint _timePoint2;
+    _timePoint2.setNow();
+    INFO(_timePoint2.toString());
+    Time::TimeInterval timeInterval3 = _timePoint2 - _timePoint1;
+    INFO(timeInterval3.toString());
 }
 
 int sec = 0;
@@ -145,8 +161,9 @@ static void TestTimerSetTimeThread() {
 static void TestPQTimer() {
     PQTimer timer;
     IClock* clock = Reflector::getNewInstance<IClock>("RealTimeClock");
-    INFO(clock->now().toString());
+    INFO(clock->now().toString() + "\n");
 
+    // 第一个计时器
     Time::TimePoint start = clock->now();
     Time::TimeInterval expire = Time::TimeInterval(4, 0);  // +4s
     Time::TimeInterval period(0, 0);
@@ -154,24 +171,28 @@ static void TestPQTimer() {
     INFO("Expire Time = " + expire.toString());
     INFO("Period Time = " + period.toString());
     std::shared_ptr<Ticker> ticker1 = std::make_shared<Ticker>(start, expire, period);
-    INFO("Ticker ID: " + std::to_string(ticker1->getId()));
-    INFO("is periodic: " + std::to_string(ticker1->isPeriodic()));
+    INFO("Ticker ID: " + std::to_string(ticker1->getId())); // 其属性 id 每创建一个自动加 1
+    INFO("is periodic: " + std::to_string(ticker1->isPeriodic()) + "\n");
 
-    // start += Time::TimeInterval(2, 0);
-    Time::TimeInterval expire2 = Time::TimeInterval(2, 0);  // +4s
+    // 第二个计时器
+    Time::TimeInterval expire2 = Time::TimeInterval(2, 800000000);  // +2.8s
     INFO("Start Time = " + start.toString());
-    INFO("Expire Time = " + expire.toString());
+    INFO("Expire Time = " + expire2.toString());
     INFO("Period Time = " + period.toString());
     std::shared_ptr<Ticker> ticker2 = std::make_shared<Ticker>(start, expire2, period);
     INFO("Ticker ID: " + std::to_string(ticker2->getId()));
-    INFO("is periodic: " + std::to_string(ticker2->isPeriodic()));
+    INFO("is periodic: " + std::to_string(ticker2->isPeriodic()) + "\n");
 
+    // 对 PQTimer 类 timer 增加两个计时器，并开始计时（计算得出，而不是不是真的计时）
     timer.addTicker(ticker1);
     timer.addTicker(ticker2);
     timer.start();
 
-    while (true) {
-    }
+    // while (true) {
+    // }
+
+     // 未实现，但是上面的 timer.start() 在执行过程中每读一个计时器后都进行了出栈操作，所以栈中此时已经没有计时器了
+    timer.stop();
 }
 
 static void TestTimeContext() {
@@ -179,21 +200,21 @@ static void TestTimeContext() {
 }
 
 TEST(TEST_TIMER, TEST_CLOCK_GET_TIME) {
-    // TestClockGetTime();
+    TestClockGetTime();
 }
 
 TEST(TEST_TIMER, TIME_CLASS) {
-    // TestTimeClass();
+    TestTimeClass();
 }
 
 TEST(TEST_TIMER, TEST_TIMER_SET_TIME) {
     /* real-time signal is better than thread */
-    // TestTimerSetTimeSignal();
-    // TestTimerSetTimeThread();
+    TestTimerSetTimeSignal();
+    TestTimerSetTimeThread();
 }
 
 TEST(TEST_TIMER, TEST_PQTIMER) {
-    TestPQTimer();
+    TestPQTimer();  // 测试 PQTimer 类和 Ticker 类
 }
 
 TEST(TEST_TIMER, TEST_TIME_CONTEXT) {
