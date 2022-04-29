@@ -49,20 +49,25 @@ class GateControlList : public REFLECT_OBJECT, public DynamicCreator<GateControl
     virtual void loadScheduleXML(std::string filename);
 
    public:
-    GateControlList(unsigned int portId) : m_portId(portId) {
+    GateControlList(unsigned int portId) : m_portId(portId) {     
         /* load config file */
-        std::string filename = "./config/gcl.xml";
+        std::string filename = "/home/reptile/下载/TSN/config/gcl.xml";
         this->loadScheduleXML(filename);
+
         /* register ticker to timer */
         Time::TimePoint start(0, 0);
         for (GateControlListItem item : this->m_gcl) {
-            INFO(item.toString());
+            INFO(item.toString() + "\n");
+
+            // 添加计时器
             std::shared_ptr<Ticker> ticker = std::make_shared<Ticker>(
                 start,
                 item.m_timeInterval,
                 this->m_period);
             TimeContext::getInstance().getTimer()->addTicker(ticker);
+            
             start += item.m_timeInterval;
+            INFO("\n累加 length: " + start.toString() + "\n");
         }
     }
 

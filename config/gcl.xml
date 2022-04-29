@@ -68,7 +68,7 @@
 			<entry>
 				<!-- us -->
 				<length>100000</length>
-				<bitvector>00000001</bitvector>
+				<bitvector>00000011</bitvector>
 				<uniqueID>1</uniqueID>
 				<phase>0</phase>
 			</entry>

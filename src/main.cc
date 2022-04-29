@@ -6,8 +6,10 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 
-#include "faker_tsn.h"
+#include <faker_tsn.h>
 #include "test.h"
+
+using namespace faker_tsn;
 
 int main(int argc, char **argv) {
     // test_state_pattern();
@@ -70,7 +72,10 @@ int main(int argc, char **argv) {
 
     // printf("MASK: %s\n",mask);
 
-    printf("tsn app");
+    // printf("tsn app");
 
+    // 测试门控列表，指定设备在 config.ini 中的 deviceName 给出；指定端口在初始化类时给出
+    GateControlList test(2);
+    printf("\nport: %d\n", test.getPortId());
     return 0;
 }
