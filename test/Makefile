@@ -28,6 +28,9 @@ TEST_LIBPCAP = $(DIR_BIN_TEST)/test_libpcap
 TEST_NETWORKING = $(DIR_BIN_TEST)/test_networking
 TEST_H2_FORWARD = $(DIR_BIN_TEST)/test_h2_forward
 TEST_H4_RECEIVER = $(DIR_BIN_TEST)/test_h4_receiver
+TEST_LOGGER = $(DIR_BIN_TEST)/test_logger
+TEST_STATE_PATTERN = $(DIR_BIN_TEST)/test_state_pattern
+TEST_LRVALUE = $(DIR_BIN_TEST)/test_lrvalue
 
 GTEST_LIB	= ../lib/gtest/libgtest.a ../lib/gtest/libgtest_main.a ../lib/hello/libhello.a ../lib/tinyxml2/libtinyxml2.a
 
@@ -41,7 +44,7 @@ OBJS = $(filter-out $(DIR_BIN)/main.o, $(wildcard ${DIR_BIN}/*.o))
 TEST_SRCS = $(wildcard ./*.cc)
 TEST_OBJS = $(patsubst %.cc, ${DIR_BIN_TEST}/%.o, $(notdir $(TEST_SRCS)))
 
-TARGETS := $(TEST) $(HELLO) $(TEST_REFLECTOR) $(TEST_CONFIGSETTING) $(TEST_TIMER) $(TEST_QUEUE) $(TEST_TINYXML2) $(TEST_PORT_MANAGER) $(TEST_REACTOR) $(TEST_SENDER) $(TEST_RECEIVER) $(TEST_LIBPCAP) $(TEST_NETWORKING) $(TEST_H2_FORWARD) $(TEST_H4_RECEIVER)
+TARGETS := $(TEST) $(HELLO) $(TEST_REFLECTOR) $(TEST_CONFIGSETTING) $(TEST_TIMER) $(TEST_QUEUE) $(TEST_TINYXML2) $(TEST_PORT_MANAGER) $(TEST_REACTOR) $(TEST_SENDER) $(TEST_RECEIVER) $(TEST_LIBPCAP) $(TEST_NETWORKING) $(TEST_H2_FORWARD) $(TEST_H4_RECEIVER) $(TEST_LOGGER) $(TEST_STATE_PATTERN) $(TEST_LRVALUE)
 
 all : $(TARGETS)
 
@@ -168,6 +171,27 @@ $(DIR_BIN_TEST)/test_h4_receiver.o : test_h4_receiver.cc $(GTEST_HEADERS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(TEST_H4_RECEIVER) : $(DIR_BIN_TEST)/test_h4_receiver.o $(OBJS)
+	$(CXX) $(CXXFLAGS) -lpthread $^ -o $@ $(GTEST_LIB) $(LIBS)
+	
+# test_logger
+$(DIR_BIN_TEST)/test_logger.o : test_logger.cc $(GTEST_HEADERS)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+	
+$(TEST_LOGGER) : $(DIR_BIN_TEST)/test_logger.o $(OBJS)
+	$(CXX) $(CXXFLAGS) -lpthread $^ -o $@ $(GTEST_LIB) $(LIBS)
+	
+# test_state_pattern
+$(DIR_BIN_TEST)/test_state_pattern.o : test_state_pattern.cc $(GTEST_HEADERS)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+	
+$(TEST_STATE_PATTERN) : $(DIR_BIN_TEST)/test_state_pattern.o $(OBJS)
+	$(CXX) $(CXXFLAGS) -lpthread $^ -o $@ $(GTEST_LIB) $(LIBS)
+	
+# test_lrvalue
+$(DIR_BIN_TEST)/test_lrvalue.o : test_lrvalue.cc $(GTEST_HEADERS)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+	
+$(TEST_LRVALUE) : $(DIR_BIN_TEST)/test_lrvalue.o $(OBJS)
 	$(CXX) $(CXXFLAGS) -lpthread $^ -o $@ $(GTEST_LIB) $(LIBS)
 
 clean :
