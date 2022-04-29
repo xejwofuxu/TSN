@@ -24,7 +24,8 @@ static void TestRecv() {
         unsigned char buffer[ETH_FRAME_LEN];
     };
 
-    const char* deviceName = "h3-eth0";
+    // const char* deviceName = "h3-eth0";
+    const char* deviceName = "ens33";
 
     /* create raw socket */
     int sockfd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_8021Q));
@@ -63,7 +64,7 @@ static void TestRecv() {
         perror("bind");
         exit(1);
     }
-    INFO("bind socket to link layer address (sockaddr_ll) struct");
+    INFO("bind socket to link layer address (sockaddr_ll) struct\n");
 
     /* receive data */
     char recvbuf[ETH_FRAME_LEN + 4 + 6];
@@ -105,6 +106,11 @@ static void TestRecv() {
         INFO("protocol = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(frame) + 12, 2));
         // vlan tag
         INFO("TCI = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(frame) + 14, 2));
+        // printf("pcp: %u\n", frame->filed.header.vlan_tag.h_vlan_TCI);
+        // __be16 _tci; 
+        // memset(&_tci, frame->filed.header.vlan_tag.h_vlan_TCI, sizeof(_tci));
+        VlanTCI vlanTCI = VlanTCI::parse(frame->filed.header.vlan_tag.h_vlan_TCI);
+        INFO("VlanTCI.pcp = " + std::to_string(vlanTCI.pcp));
         INFO("protocol = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(frame) + 16, 2));
         INFO("reserved = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(frame) + 18, 2));
         // r-tag
