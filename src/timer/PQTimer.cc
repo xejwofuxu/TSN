@@ -78,7 +78,7 @@ PQTimer::~PQTimer() {
 void PQTimer::setTimer(std::shared_ptr<Ticker>& ticker) {
     Time::TimePoint tp = ticker->getStart() + ticker->getExpire();
     // Time::TimePoint tp = ticker->getExpire() + (ticker->getStart() - this->m_clock->now());
-    INFO("Set Sec = " + std::to_string(tp.sec) + ", Nsec = " + std::to_string(tp.nsec));
+    INFO("Set Sec = " + std::to_string(tp.sec) + ", Nsec = " + std::to_string(tp.nsec) + "\n");
 
     struct itimerspec its;
     memset(&its, 0, sizeof(its));
@@ -113,10 +113,12 @@ void PQTimer::setTimer(std::shared_ptr<Ticker>& ticker) {
 }
 
 void PQTimer::start() {
+    int count = 1;
 LOOP:
+    printf("第 %d 个计时器\n", count++);
     /* get first ticker */
     std::shared_ptr<Ticker> ticker = this->getTicker();
-    INFO("Get Ticker : " + ticker->toString());
+    INFO("Get Ticker : " + ticker->toString() + "\n");
     this->removeTicker();
 
     /* set timer */
