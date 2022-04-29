@@ -92,7 +92,7 @@ static void TestDynamicCreate() {
     REFLECT_OBJECT* hello = REFLECTOR::CreateByTypeName(std::string("faker_tsn::Hello"), 1002);
     hello->Say();
     std::cout << "----------------------------------------------------------------------" << std::endl;
-    REFLECT_OBJECT* gcl = REFLECTOR::CreateByTypeName(std::string("faker_tsn::GateControlList"), 1U);
+    REFLECT_OBJECT* gcl = REFLECTOR::CreateByTypeName(std::string("faker_tsn::GateControlList"), 2U); // 无符号整形
     gcl->Say();
     std::cout << "----------------------------------------------------------------------" << std::endl;
     REFLECT_OBJECT* queue = REFLECTOR::CreateByTypeName(std::string("faker_tsn::IEEE8021Queue"), (unsigned short)1, (uint8_t)1);
