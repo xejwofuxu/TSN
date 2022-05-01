@@ -4,7 +4,7 @@ namespace faker_tsn
 {
 
 const char *PortManager::s_portFilterList[] = {
-    "lo", "any", "nflog", "nfqueue", "bluetooth0", "docker0", "usbmon1", "usbmon2"
+    "lo", "any", "nflog", "nfqueue", "bluetooth0", "bluetooth-monitor", "docker0", "usbmon1", "usbmon2"
 };
 const int PortManager::s_portFilterLen = 8;
 
@@ -32,7 +32,7 @@ void PortManager::findAllDeviceName()
 void PortManager::createPortFromDeviceNameList()
 {
     for (auto it = this->m_deviceNames.begin(); it != this->m_deviceNames.end(); it++) {
-        // filter unnessesarry devices
+        // filter unnessesarry devices，PortManager::s_portFilterList 名单里的不要
         bool flag = false;
         for (int i = 0; i < PortManager::s_portFilterLen; i++) {
             if (strcmp(PortManager::s_portFilterList[i], *it) == 0) {
@@ -41,6 +41,7 @@ void PortManager::createPortFromDeviceNameList()
             }
         }
         if (flag) continue;
+
         // create port
         std::shared_ptr<IPort> port = std::make_shared<DataPort>(*it);
         INFO("create port name:" + std::string(port->getDeviceName()) + " id:" + std::to_string(port->getDeviceID()));
@@ -58,7 +59,8 @@ std::vector<const char*>& PortManager::getAllDeviceName()
 
 std::shared_ptr<IPort> PortManager::getPort(uint8_t index)
 {
-    return this->m_ports.at(index - 1);
+    // return this->m_ports.at(index - 1);
+    return this->m_ports.at(index);
 };
 
 // this function may not work properly in virtual environment, e.g., VMWare
