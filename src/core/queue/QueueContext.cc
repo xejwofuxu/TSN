@@ -6,7 +6,7 @@ QueueContext::QueueContext(unsigned short portIndex) : m_portIndex(portIndex) {
     /* initialize queues */
     ConfigSetting& cs = ConfigSetting::getInstance();
     this->m_deviceName = cs.get<std::string>("deviceName");
-    int queueNum = std::atoi(cs.get<char*>("switch.queue.number"));
+    int queueNum = std::atoi(cs.get<const char*>("switch.queue.number"));
     INFO(this->m_deviceName + ".port" + std::to_string(this->m_portIndex) + ".queues.number = " + std::to_string(queueNum));
     std::string queueClass = cs.get<std::string>("switch.queue.class");
     INFO(this->m_deviceName + ".port" + std::to_string(this->m_portIndex) + ".queues.class = " + queueClass);
