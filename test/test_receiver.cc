@@ -106,9 +106,6 @@ static void TestRecv() {
         INFO("protocol = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(frame) + 12, 2));
         // vlan tag
         INFO("TCI = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(frame) + 14, 2));
-        // printf("pcp: %u\n", frame->filed.header.vlan_tag.h_vlan_TCI);
-        // __be16 _tci; 
-        // memset(&_tci, frame->filed.header.vlan_tag.h_vlan_TCI, sizeof(_tci));
         VlanTCI vlanTCI = VlanTCI::parse(frame->filed.header.vlan_tag.h_vlan_TCI);
         INFO("VlanTCI.pcp = " + std::to_string(vlanTCI.pcp));
         INFO("protocol = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(frame) + 16, 2));
