@@ -8,6 +8,8 @@ uint8_t DataPort::s_portNum = 0;
 
 DataPort::DataPort(const char* deviceName) : m_deviceID(DataPort::s_portNum++), m_deviceName(deviceName) {
     INFO("Construct Port[" + std::to_string(s_portNum) + "|" + std::string(this->m_deviceName) + "] created");
+    this->m_sockfd = socket(PF_PACKET, SOCK_RAW, 0);
+    printf("m_sockfd: %d\n", this->m_sockfd);
 }
 
 DataPort::~DataPort() {
@@ -110,9 +112,11 @@ void DataPort::createSocket() {
         throw PortCreationException();
     }
 
+    printf("device id: %d\n", this->m_deviceID);
+
     /* create QueueContext */
     this->m_queueContext.reset(new QueueContext(this->m_deviceID));
-    INFO("Create QueueConext");
+    INFO("Create QueueConext\n");
 
     /* mac address */
     // char hwaddr[ETH_ALEN];
@@ -147,6 +151,7 @@ void DataPort::registerEventHandler() {
 
 void DataPort::sendTest() {
     INFO("TEST SEND");
+    INFO(this->m_deviceName);
     union ethframe {
         struct
         {
@@ -158,6 +163,7 @@ void DataPort::sendTest() {
     /* get interface index */
     struct ifreq buffer;
     int ifindex;
+    printf("m_sockfd: %d\n", this->m_sockfd);
     memset(&buffer, 0x00, sizeof(buffer));
     strncpy(buffer.ifr_name, this->m_deviceName, IFNAMSIZ);
     if (ioctl(this->m_sockfd, SIOCGIFINDEX, &buffer) < 0) {
@@ -165,8 +171,10 @@ void DataPort::sendTest() {
         // TODO handle error
     }
     ifindex = buffer.ifr_ifindex;
+    printf("index: %d\n", ifindex);
 
     /* fill in frame */
+    // 注：不同于 tsn_frame
     union ethframe frame;
     unsigned char dest[ETH_ALEN] = {0x00, 0x12, 0x34, 0x56, 0x78, 0x90};
     unsigned short proto = ETH_P_TSN;
@@ -192,6 +200,7 @@ void DataPort::sendTest() {
     } else {
         INFO("Write error!");
     }
+    std::cout << frame.buffer << std::endl;
 
     /* send data */
     if (sendto(this->m_sockfd, frame.buffer, frame_len, 0, (struct sockaddr*)&saddrll, sizeof(saddrll)) > 0)
