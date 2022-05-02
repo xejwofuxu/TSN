@@ -24,7 +24,8 @@ static void TestRecv() {
         unsigned char buffer[ETH_FRAME_LEN];
     };
 
-    const char* deviceName = "h4-eth0";
+    // const char* deviceName = "h4-eth0";
+    const char* deviceName = "ens33";
 
     /* create raw socket */
     int sockfd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_8021Q));
