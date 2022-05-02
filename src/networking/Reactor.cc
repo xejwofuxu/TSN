@@ -35,7 +35,7 @@ int Reactor::register_handler(std::shared_ptr<IEventHandler> eventHandler, EVENT
         temp.emplace(std::move(eventType), std::move(eventHandler));
         this->m_handlers.emplace(std::move(fd), std::move(temp));
         /* set Epoll events */
-        int events = 0x000;
+        int events = 0x000; // 初始化
         this->toEpollEvent(eventType, events);
         /* add handle to Selector */
         this->m_demultiplexer.addHandle(handle, events);
@@ -44,7 +44,7 @@ int Reactor::register_handler(std::shared_ptr<IEventHandler> eventHandler, EVENT
         auto temp = this->m_handlers[fd];
         temp.emplace(std::move(eventType), std::move(eventHandler));
         /* set Epoll events */
-        int events = 0;
+        int events = 0; // 初始化
         for (auto it = temp.begin(); it != temp.end(); it++) {
             this->toEpollEvent(it->first, events);
         }
