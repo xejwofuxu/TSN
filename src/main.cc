@@ -74,8 +74,5 @@ int main(int argc, char **argv) {
 
     // printf("tsn app");
 
-    // 测试门控列表，指定设备在 config.ini 中的 deviceName 给出；指定端口在初始化类时给出
-    GateControlList test(2);
-    printf("\nport: %d\n", test.getPortId());
     return 0;
 }
