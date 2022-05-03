@@ -24,7 +24,7 @@ void RecvTSNFrameEventHandler::handle_event(EVENT_TYPE eventType) {
     } else {
         INFO("Recv error!");
     }
-
+    
     // /* filter non-TSN frame */
     // if (memcmp(recvbuf, this->m_sockAddrII.sll_addr, 6) != 0) {
     //     INFO("------------- Non-TSN frame --------------");
@@ -37,7 +37,7 @@ void RecvTSNFrameEventHandler::handle_event(EVENT_TYPE eventType) {
     unsigned char destMac[ETH_ALEN] = {0x01, 0x00, 0x5E, 0x00, 0x00, 0x01};
     unsigned char src[ETH_ALEN];
     memcpy(src, &this->m_sockAddrII.sll_addr, ETH_ALEN);
-    if (memcmp(recvbuf, destMac, 6) != 0 || memcmp(recvbuf + 6, src, 6) == 0) {
+    if (memcmp(recvbuf, destMac, 6) != 0 || memcmp(recvbuf + 6, src, 6) != 0) {
         INFO("------------- Non-TSN frame --------------");
         return;
     } else {
