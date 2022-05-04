@@ -28,7 +28,7 @@ class QueueContext {
    public:
     friend class TransmissionSelection;
 
-    QueueContext(unsigned short potrIndex);
+    QueueContext(unsigned short portIndex);
 
     ~QueueContext();
 
