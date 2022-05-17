@@ -15,7 +15,7 @@ InnerBuffer::~InnerBuffer() {
 
 void InnerBuffer::drop(IFrameBody* frameBody) {
     INFO("Drop frame");
-    delete frameBody;
+    // delete frameBody;
 }
 
 void InnerBuffer::enqueue(IFrameBody* frameBody) {

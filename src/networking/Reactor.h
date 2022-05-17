@@ -37,7 +37,7 @@ class Reactor {
     /* entry point into the reactive event loop */
     int handle_events(std::chrono::duration<int, std::milli> timeout = std::chrono::duration<int, std::milli>(0));
 
-    Selector &getDemultoplexer() {
+    Selector &getDemultiplexer() {
         return this->m_demultiplexer;
     }
 

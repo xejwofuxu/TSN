@@ -1,4 +1,5 @@
 #include "SendTSNFrameEventHandler.h"
+#include <faker_tsn.h>
 
 namespace faker_tsn {
 
@@ -26,13 +27,13 @@ void SendTSNFrameEventHandler::handle_event(EVENT_TYPE eventType) {
     TSNFrameBody* frameBody = (TSNFrameBody*)this->m_queueContext->dequeue();
     if (frameBody == nullptr) {
         // disable EPOLLOUT event
-        Reactor::getInstance().getDemultoplexer().updateHandle(this->m_handle, 0x00);
-        INFO("Nothing to be sent");
+        Reactor::getInstance().getDemultiplexer().updateHandle(this->m_handle, 0x00);
+        INFO("Nothing to be sent\n");
         return;
     }
 
-    INFO("Encode frame");
-    INFO("------------- TSN frame  --------------");
+    // INFO("Encode frame");
+    // INFO("------------- TSN frame  --------------");
 
     /* construct ethernet header */
     struct ethhdr eth_hdr;
@@ -54,8 +55,9 @@ void SendTSNFrameEventHandler::handle_event(EVENT_TYPE eventType) {
     memset(&vlan_tag, 0x00, sizeof(vlan_tag));
     memcpy(&vlan_tag.h_vlan_TCI, &tci, sizeof(tci));        // set TCI
     vlan_tag.h_vlan_encapsulated_proto = htons(ETH_P_ALL);  // set IEEE 1722 protocol
-    INFO("TCI = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&vlan_tag.h_vlan_TCI), 2));
-    INFO("protocol = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&vlan_tag.h_vlan_encapsulated_proto), 2));
+    // INFO("TCI = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&vlan_tag.h_vlan_TCI), 2));
+    // INFO("VlanTCI.pcp = " + std::to_string(vlan_tci.pcp));
+    // INFO("protocol = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&vlan_tag.h_vlan_encapsulated_proto), 2));
 
     /* construct R-tag */
     struct rtag_hdr rtag;
@@ -63,9 +65,9 @@ void SendTSNFrameEventHandler::handle_event(EVENT_TYPE eventType) {
     memset(&rtag, 0x00, sizeof(rtag));
     rtag.h_rtag_seq_num = htons(seq);  // set
     rtag.h_rtag_encapsulated_proto = htons(ETH_P_IP);
-    INFO("reserved = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&rtag.h_rtag_rsved), 2));
-    INFO("sequence number = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&rtag.h_rtag_seq_num), 2));
-    INFO("protocol = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&rtag.h_rtag_encapsulated_proto), 2));
+    // INFO("reserved = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&rtag.h_rtag_rsved), 2));
+    // INFO("sequence number = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&rtag.h_rtag_seq_num), 2));
+    // INFO("protocol = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(&rtag.h_rtag_encapsulated_proto), 2));
 
     /* construct TSN frame */
     union tsn_frame frame;
@@ -73,23 +75,33 @@ void SendTSNFrameEventHandler::handle_event(EVENT_TYPE eventType) {
     unsigned int data_len = strlen(data);
     unsigned int frame_len = data_len + ETH_HLEN + 4 + 6;
     memset(&frame, 0x00, sizeof(tsn_frame));
-    INFO("TSN frame length = " + std::to_string(frame_len));
+    // INFO("TSN frame length = " + std::to_string(frame_len));
     memcpy(&frame.filed.header.eth_hdr, &eth_hdr, sizeof(eth_hdr));
     memcpy(&frame.filed.header.vlan_tag, &vlan_tag, sizeof(vlan_tag));
     memcpy(&frame.filed.header.r_tag, &rtag, sizeof(rtag));
     memcpy(frame.filed.data, data, strlen(data));
     // INFO("data = " + ConvertUtils::converBinToHexString(reinterpret_cast<unsigned char*>(frame.filed.data), data_len));
-    INFO("data(string) = " + std::string((char*)frame.filed.data));
+    // INFO("data(string) = " + std::string((char*)frame.filed.data));
 
-    // /* set dest mac for sockaddr_ll */
-    // memcpy((void*)(&this->m_sockAddrII.sll_addr), (void*)dest, ETH_ALEN);
+    /* 莫比乌斯环 */
+    // /* get interface index */
+    // int ifindex = LinkLayerInterface::getIndex("ens33");
 
+    /* 正确打开方式 */
+    /* get interface index */
+    int ifindex = LinkLayerInterface::getIndex("lo");
+ 
+    this->m_sockAddrII.sll_family = PF_PACKET;           // set address family
+    this->m_sockAddrII.sll_ifindex = ifindex;            // set interface index
+    this->m_sockAddrII.sll_halen = ETH_ALEN;             // set address length
+    this->m_sockAddrII.sll_protocol = htons(ETH_P_ALL);  // set protocol
+    
     /* send data */
     int fd = this->m_handle;
     if (sendto(fd, frame.buffer, frame_len, 0, (struct sockaddr*)&this->m_sockAddrII, sizeof(this->m_sockAddrII)) > 0)
-        INFO("Send success!");
+        INFO("Send success!\n");
     else
-        INFO("Send error!");
+        INFO("Send error!\n");
 }
 
 }  // namespace faker_tsn

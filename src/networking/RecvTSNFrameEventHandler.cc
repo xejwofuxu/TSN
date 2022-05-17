@@ -44,7 +44,7 @@ void RecvTSNFrameEventHandler::handle_event(EVENT_TYPE eventType) {
         INFO("------------- TSN frame  --------------");
     }
 
-    INFO("Decode frame");
+    // INFO("Decode frame");
 
     /* parse raw data to tsn frame */
     TSNFrameBody* frame = new TSNFrameBody();
@@ -58,19 +58,20 @@ void RecvTSNFrameEventHandler::handle_event(EVENT_TYPE eventType) {
     frame->setSeq(ntohs(seq));
     frame->setData(recvbuf + 24, strlen((char*)recvbuf + 24));
 
-    // ethernet header
-    INFO("dest mac = " + ConvertUtils::converBinToHexString((recvbuf), 6));
-    INFO("src mac = " + ConvertUtils::converBinToHexString((recvbuf) + 6, 6));
-    INFO("ether protocol = " + ConvertUtils::converBinToHexString((recvbuf) + 12, 2));
-    // vlan-tag
-    INFO("TCI = " + ConvertUtils::converBinToHexString((recvbuf) + 14, 2));
-    INFO("vlan-tag protocol = " + ConvertUtils::converBinToHexString((recvbuf) + 16, 2));
-    // r-tag
-    INFO("reserved = " + ConvertUtils::converBinToHexString((recvbuf) + 18, 2));
-    INFO("sequence number = " + ConvertUtils::converBinToHexString((recvbuf) + 20, 2));
-    INFO("r-tag protocol = " + ConvertUtils::converBinToHexString((recvbuf) + 22, 2));
-    // INFO("data = " + ConvertUtils::converBinToHexString((recvbuf) + 24, ETH_DATA_LEN));
-    INFO("data(string) = " + std::string(reinterpret_cast<char*>(recvbuf) + 24));
+    // // ethernet header
+    // INFO("dest mac = " + ConvertUtils::converBinToHexString((recvbuf), 6));
+    // INFO("src mac = " + ConvertUtils::converBinToHexString((recvbuf) + 6, 6));
+    // INFO("ether protocol = " + ConvertUtils::converBinToHexString((recvbuf) + 12, 2));
+    // // vlan-tag
+    // INFO("TCI = " + ConvertUtils::converBinToHexString((recvbuf) + 14, 2));
+    // INFO("VlanTCI.pcp = " + std::to_string(frame->getPCP()));
+    // INFO("vlan-tag protocol = " + ConvertUtils::converBinToHexString((recvbuf) + 16, 2));
+    // // r-tag
+    // INFO("reserved = " + ConvertUtils::converBinToHexString((recvbuf) + 18, 2));
+    // INFO("sequence number = " + ConvertUtils::converBinToHexString((recvbuf) + 20, 2));
+    // INFO("r-tag protocol = " + ConvertUtils::converBinToHexString((recvbuf) + 22, 2));
+    // // INFO("data = " + ConvertUtils::converBinToHexString((recvbuf) + 24, ETH_DATA_LEN));
+    // INFO("data(string) = " + std::string(reinterpret_cast<char*>(recvbuf) + 24));
 
     /* forward frame */
     unsigned char srcMac[ETH_ALEN];

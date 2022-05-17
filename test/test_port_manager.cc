@@ -15,8 +15,8 @@ static void TestPortManager() {
     portManager.findAllDeviceName();
     auto deviceNames = portManager.getAllDeviceName();
     // 输出所有设备名称，空格隔开
-    std::copy(deviceNames.begin(), deviceNames.end(), std::ostream_iterator<std::string>(std::cout, " "));
-    std::cout << std::endl << std::endl;
+    // std::copy(deviceNames.begin(), deviceNames.end(), std::ostream_iterator<std::string>(std::cout, " "));
+    // std::cout << std::endl << std::endl;
     // 根据设备（PortManager）：1、创建端口（DataPort）；2、创建套接字（DataPort）；3、创建队列（QueueContext）
     //                        4、注册事件（DataPort、IEventHandler）5、端口状态（CreationPortState）
     portManager.createPortFromDeviceNameList();
@@ -24,9 +24,9 @@ static void TestPortManager() {
     auto port = portManager.getPort(0);
     INFO(std::to_string(port->getDeviceID()));
     INFO(port->getDeviceName());
-    std::cout << std::endl;
+    // std::cout << std::endl;
     // 测试（DataPort）
-    port->sendTest();
+    // port->sendTest();
 }
 
 static void TestPort() {
@@ -181,13 +181,13 @@ TEST(TEST_PORT_MANAGER, TEST_PORT_MANAGER) {
 }
 
 TEST(TEST_PORT_MANAGER, TEST_PORT) {
-    TestPort();
+    // TestPort();
 }
 
 TEST(TEST_PORT_MANAGER, TEST_PCAP) {
-    TestPCAP();
+    // TestPCAP();
 }
 
 TEST(TEST_PORT_MANAGER, TEST_SEND_RECV) {
-    TestSendRecv();
+    // TestSendRecv();
 }

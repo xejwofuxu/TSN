@@ -15,12 +15,17 @@ void ForwardFunction::forward(const unsigned char* srcMac, void* data, size_t le
 
     // TODO unicast & multicast
     ports = std::vector<unsigned short>();
-    ports.push_back(2);
-    ports.push_back(3);
+    ports.push_back(0);
+    // ports.push_back(1);
+    // ports.push_back(2);
+    std::vector<unsigned short>::iterator it; 
+    std::cout << "ports: ";
+ 	for(it = ports.begin(); it != ports.end(); it++) std::cout<< *it << " ";
+    std::cout << std::endl;
 
     /* forward frame */
     auto portManager = TSNContext::getInstance().getPortManager();
-    Selector& demultoplexer = Reactor::getInstance().getDemultoplexer();
+    Selector& demultoplexer = Reactor::getInstance().getDemultiplexer();
     for (unsigned short index : ports) {
         auto port = portManager->getPort(index);
         INFO("Forward to " + port->toString());

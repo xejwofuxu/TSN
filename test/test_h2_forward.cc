@@ -15,23 +15,23 @@ static void Sender() {
 
     // crate port 2
     // const char* name2 = "s2-eth1";
-    const char* name2 = "ens33";
-    std::shared_ptr<IPort> port2 = std::make_shared<DataPort>(name2);
-    std::shared_ptr<IPortState> creationState2 = std::make_shared<CreationPortState>();
-    creationState2->doAction(port2);
+    // const char* name2 = "ens33";
+    // std::shared_ptr<IPort> port2 = std::make_shared<DataPort>(name2);
+    // std::shared_ptr<IPortState> creationState2 = std::make_shared<CreationPortState>();
+    // creationState2->doAction(port2);
 
     // crate port 3
     // const char* name3 = "s2-eth2";
-    const char* name3 = "ens33";
-    std::shared_ptr<IPort> port3 = std::make_shared<DataPort>(name3);
-    std::shared_ptr<IPortState> creationState3 = std::make_shared<CreationPortState>();
-    creationState2->doAction(port3);
+    // const char* name3 = "ens33";
+    // std::shared_ptr<IPort> port3 = std::make_shared<DataPort>(name3);
+    // std::shared_ptr<IPortState> creationState3 = std::make_shared<CreationPortState>();
+    // creationState2->doAction(port3);
 
     // add port into port manager
     std::shared_ptr<PortManager> portManager = TSNContext::getInstance().getPortManager();
     portManager->appendPort(port1);
-    portManager->appendPort(port2);
-    portManager->appendPort(port3);
+    // portManager->appendPort(port2);
+    // portManager->appendPort(port3);
 
     // load mac table
     MacTable::loadRouteXML("/home/reptile/下载/TSN/config/routes.xml");
